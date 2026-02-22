@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
+from .models import Profile
+from .models import WasteUpload
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -45,3 +47,13 @@ class RegisterForm(forms.ModelForm):
         if p1 and p2 and p1 != p2:
             raise forms.ValidationError("Passwords do not match")
         return cleaned_data
+    
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["avatar"]
+
+class WasteUploadForm(forms.ModelForm):
+    class Meta:
+        model = WasteUpload
+        fields = ['image', 'category']

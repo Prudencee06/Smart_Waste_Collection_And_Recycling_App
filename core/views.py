@@ -1,6 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
+from django.shortcuts import render
+
+def landing(request):
+    return render(request, "core/landing.html")
 
 def login_view(request):
     if request.method == "POST":

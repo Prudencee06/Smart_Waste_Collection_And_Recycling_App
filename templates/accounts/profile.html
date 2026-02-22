@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.avatar }}
+  <button class="btn btn-primary">Update Picture</button>
+</form>
+{% endblock %}

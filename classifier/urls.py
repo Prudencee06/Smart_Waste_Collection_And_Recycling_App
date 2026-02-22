@@ -1,7 +1,6 @@
 from django.urls import path
-from . import views
+from .views import upload_image
 
 urlpatterns = [
-    path('dashboard/', views.dashboard, name='dashboard'),
-
+    path("upload/", upload_image, name="classify_waste"),
 ]
