@@ -25,7 +25,8 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("", views.landing, name="landing"), 
     path("municipality/", include("municipality.urls")),
-    # path("recycling/", include("recycling.urls")),
+    path("recycling/", include("recycling.urls")),
+    # path('recycling/', include('recycling.urls')),
 ]
 
 if settings.DEBUG:

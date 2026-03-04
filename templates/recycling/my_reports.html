@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}My Waste Reports{% endblock %}
+
+{% block content %}
+<h2>My Reports</h2>
+
+<ul>
+  {% for report in user.wasteupload_set.all %}
+    <li>
+      {{ report.category }} - {{ report.predicted_weight }} kg - {{ report.points_earned }} points
+    </li>
+  {% empty %}
+    <li>No reports uploaded yet.</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

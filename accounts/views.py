@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .forms import LoginForm, RegisterForm
-from .models import Profile, WasteUpload
+from .models import Profile
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import WasteUploadForm
 from django.db import models
+from django.db.models import Sum
+from recycling.models import WasteUpload
+from municipality.models import NewsItem
+
 
 def login_view(request):
     form = LoginForm(request.POST or None)
@@ -55,24 +58,29 @@ def register_view(request):
 
 @login_required
 def dashboard(request):
-    try:
-        profile = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
-        messages.error(request, "Profile not found. Please contact support.")
-        return redirect('home')
+    profile = Profile.objects.get(user=request.user)
 
     if profile.role == 'municipality':
         return render(request, 'municipality/dashboard.html')
 
+    #Now pulling uploads from recycling app
+    # Collected trash (just take all uploads for the user)
     uploads = WasteUpload.objects.filter(user=request.user).order_by('-created_at')[:5]
 
-    total_points = uploads.aggregate(
-        total=models.Sum('points_earned')
-    )['total'] or 0
+    # Pending trash (maybe small weight uploads not yet collected)
+    pending_uploads = WasteUpload.objects.filter(user=request.user, predicted_weight=0).order_by('-created_at')
+
+    # Total points
+    total_points = WasteUpload.objects.filter(user=request.user).aggregate(total=Sum('points_earned'))['total'] or 0
+
+    # News items from municipality
+    news_items = NewsItem.objects.order_by('-created_at')[:6]
 
     context = {
         'uploads': uploads,
+        'pending_uploads': pending_uploads,
         'total_points': total_points,
+        'news_items': news_items,
     }
 
     return render(request, "accounts/dashboard.html", context)
@@ -82,62 +90,7 @@ def logout_view(request):
     logout(request)
     return redirect("accounts:login")
 
-@login_required
-def report_waste(request):
-    return render(request, "accounts/report_waste.html")  
-
-@login_required
-def report_waste(request):
-    return render(request, "accounts/report_waste.html") 
-
-@login_required
-def my_reports(request):
-    return render(request, "accounts/my_reports.html")
-
-@login_required
-def view_reports(request):
-    return render(request, "municipality/view_reports.html")
-
-@login_required
-def analytics(request):
-    return render(request, "municipality/analytics.html")
 
 @login_required
 def profile(request):
     return render(request, "accounts/profile.html")
-
-#waste upload
-@login_required
-def waste_upload(request):
-    if request.method == 'POST':
-        form = WasteUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            waste_upload = form.save(commit=False)
-            waste_upload.user = request.user
-
-            #prediction(waste category + weights)
-            waste_upload.predicted_weight = predicted_weight(
-                waste_upload.image,
-                waste_upload.category
-            ) 
-
-            #points
-            waste_upload.points_earned = int(waste_upload.predicted_weight * 10)
-
-            waste_upload.save()
-            messages.success(request, "Waste image uploaded successfully!")
-            return redirect('accounts/dashboard')
-        else:
-            form = WasteUploadForm()
-    return render(request, 'accounts/my_reports.html', {'form': form})
-
-# waste predistion testing
-def predict_weight(image, category):
-    # TEMPORARY logic (replace with ML later)
-    category_weights = {
-        'plastic': 0.3,
-        'paper': 0.2,
-        'organic': 0.5,
-        'metal': 0.7,
-    }
-    return category_weights.get(category, 0.25)

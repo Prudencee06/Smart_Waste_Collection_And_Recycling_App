@@ -100,3 +100,34 @@ btn-primary {
   border-radius: var(--brad-inner);
   transition: background-color 200ms ease-in;
 }
+
+/* For dashboard styles */
+.dashboard-hero {
+    background-image: url('../images/logo.png'); /* adjust path if needed */
+    background-size: cover;
+    background-position: center;
+    padding: 60px 30px;
+    color: white;
+    text-align: center;
+}
+
+.dashboard-points h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.dashboard-points p {
+    font-size: 1.2rem;
+}
+
+.service-card i {
+    color: #0d6efd;
+}
+
+.service-card h5 {
+    margin-top: 10px;
+}
+
+.service-card .btn {
+    font-size: 0.85rem;
+}

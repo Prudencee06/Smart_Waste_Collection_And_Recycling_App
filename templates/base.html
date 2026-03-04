@@ -48,13 +48,13 @@
         <!-- Citizen Only -->
         {% if user.is_authenticated and user.profile.role == "citizen" %}
         <li class="sidebar__item">
-          <a class="sidebar__link" href="{% url 'accounts:report_waste' %}">
+          <a class="sidebar__link" href="{% url 'recycling:waste_upload' %}">
             <i class="fas fa-exclamation-triangle"></i>
             <span class="text">Report Waste</span>
           </a>
         </li>
         <li class="sidebar__item">
-          <a class="sidebar__link" href="{% url 'accounts:my_reports' %}">
+          <a class="sidebar__link" href="{% url 'recycling:my_reports' %}">
             <i class="fas fa-file-alt"></i>
             <span class="text">My Reports</span>
           </a>
